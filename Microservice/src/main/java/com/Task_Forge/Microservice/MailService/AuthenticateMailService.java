@@ -6,8 +6,8 @@ import javax.mail.internet.*;
 import java.util.Properties;
 
 public class AuthenticateMailService {
-    private static final String EMAIL_FROM = "vanshikavs3008@gmail.com";
-    private static final String EMAIL_PASSWORD = "eeja paja gsdj phef";
+    private static final String EMAIL_FROM = "prajapatikshitij566@gmail.com";
+    private static final String EMAIL_PASSWORD = "Kshitij123f";
 
     public static void sendOTP(String recipientEmail, String otp) {
         Properties properties = new Properties();
