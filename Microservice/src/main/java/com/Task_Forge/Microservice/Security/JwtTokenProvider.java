@@ -30,7 +30,7 @@ public class JwtTokenProvider {
                 .claim("email", userDetails.getUsername()) // Add email claim
                 .setIssuedAt(new Date()) // Token creation time
                 .setExpiration(new Date(System.currentTimeMillis() + expiration)) // Expiration time
-                .signWith(SignatureAlgorithm.HS512, secret) // Secure signing
+                .signWith(SignatureAlgorithm.HS256, secret) // Secure signing
                 .compact();
     }
 
