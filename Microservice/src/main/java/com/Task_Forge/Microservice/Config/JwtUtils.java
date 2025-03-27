@@ -1,4 +1,4 @@
-package com.Task_Forge.Microservice.Util;
+package com.Task_Forge.Microservice.Config;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

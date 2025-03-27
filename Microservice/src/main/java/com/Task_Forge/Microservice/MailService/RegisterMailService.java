@@ -7,7 +7,7 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 public class RegisterMailService {
-    private static final String EMAIL_FROM = "vanshikavs3008@gmail.com"; // Change to your email
+    private static final String EMAIL_FROM = "test@gmail.com"; // Change to your email
     private static final String EMAIL_PASSWORD = "eeja paja gsdj phef"; // Use App Password if required
 
     // Method to generate OTP

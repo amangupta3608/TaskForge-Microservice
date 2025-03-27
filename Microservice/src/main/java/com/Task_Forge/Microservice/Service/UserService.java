@@ -34,24 +34,22 @@ public class UserService {
     private JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public String registerUser(SignupRequest signupRequest){
-        if(userRepository.findByEmail(signupRequest.getEmail()) != null){
+    public String registerUser(SignupRequest signupRequest) {
+        if (userRepository.findByEmail(signupRequest.getEmail()) != null) {
             throw new RuntimeException("User with this email already exists");
         }
 
         User user = new User();
         user.setName(signupRequest.getName());
         user.setEmail(signupRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));  // ✅ Store encoded password
         user.setRole(signupRequest.getRole() != null ? signupRequest.getRole() : RoleType.DEVELOPER);
         userRepository.save(user);
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signupRequest.getEmail(), signupRequest.getPassword())
-        );
-
-        return jwtTokenProvider.generateToken(authentication);
+        // ✅ Instead of forcing authentication, just return a success message
+        return "User registered successfully. Please log in.";
     }
+
 
     @Transactional
     public String authenticateUser(LoginRequest loginRequest){

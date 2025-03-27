@@ -3,6 +3,7 @@ package com.Task_Forge.Microservice.DTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+
 @Data
 public class LoginRequest {
 

@@ -29,13 +29,13 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> registerUser(@RequestBody SignupRequest signupRequest){
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest){
         String jwt = userService.registerUser(signupRequest);
         return ResponseEntity.ok(jwt);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticationUser(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> authenticationUser(@RequestBody LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
