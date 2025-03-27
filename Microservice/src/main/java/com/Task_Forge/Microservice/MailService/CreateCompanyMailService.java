@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class CreateCompanyMailService {
     private static final String EMAIL_FROM = "test@gmail.com.com";
-    private static final String EMAIL_PASSWORD = "eeja paja gsdj phef";
+    private static final String EMAIL_PASSWORD = "TaskForge123";
 
     public static void sendOTP(String recipientEmail, String otp) {
         Properties properties = new Properties();
