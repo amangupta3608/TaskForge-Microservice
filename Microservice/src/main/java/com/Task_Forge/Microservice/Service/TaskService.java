@@ -15,6 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -44,6 +47,16 @@ public class TaskService {
         task.setProject(project);
         task.setAssignedTo(assignedUser);
         return taskRepository.save(task);
+    }
+
+    public long getTasksCountLast7Days(UUID userId){
+        LocalDateTime lastWeek = LocalDateTime.now().minusDays(7);
+        return taskRepository.countTasksLast7Days(userId, lastWeek);
+    }
+
+    public int getCompletedTasksCount(UUID employeeId){
+        LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
+        return taskRepository.countCompletedTasks(employeeId, sevenDaysAgo);
     }
 
     @Transactional(readOnly = true)

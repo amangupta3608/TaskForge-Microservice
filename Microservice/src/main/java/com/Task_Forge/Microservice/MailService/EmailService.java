@@ -32,7 +32,7 @@ import java.util.Random;
         this.mailSender = mailSender;
     }
 
-    // ✅ Send OTP for Verification (expires in 5 minutes)
+    // Send OTP for Verification (expires in 5 minutes)
     public void sendOTP(String recipientEmail) {
         String otp = generateOTP();
         LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(5);
@@ -54,7 +54,7 @@ import java.util.Random;
     }
 
 
-    // ✅ Verify OTP
+    // Verify OTP
     public boolean verifyOTP(String email, String enteredOTP) {
         OTPDetails details = otpStorage.get(email);
         if (details == null || LocalDateTime.now().isAfter(details.getExpiryTime())) {
@@ -63,7 +63,7 @@ import java.util.Random;
         return details.getOtp().equals(enteredOTP);
     }
 
-    // ✅ Send Employee Invitation (Valid for 7 Days)
+    // Send Employee Invitation (Valid for 7 Days)
     public void sendOfficialInvitation(String recipientEmail, String organizationName,
                                        String eventName, String eventDate,
                                        String eventTime, String location) {
