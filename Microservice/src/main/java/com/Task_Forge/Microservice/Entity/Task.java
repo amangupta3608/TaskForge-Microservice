@@ -31,12 +31,14 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
+
     @Column(nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskStatus status; //Enum for this too
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -47,4 +49,7 @@ public class Task {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "completedAt")
+    private LocalDateTime completedAt;
 }

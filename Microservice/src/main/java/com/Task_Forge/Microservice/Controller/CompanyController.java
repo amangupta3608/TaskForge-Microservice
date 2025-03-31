@@ -17,13 +17,13 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
-    @PreAuthorize("hasRole('ADMIN')") //only admins can create companies
+//    @PreAuthorize("hasRole('ADMIN')") //only admins can create companies
     @PostMapping("/create")
     public ResponseEntity<Company> createCompany(@RequestBody CompanyDTO companyDTO){
         return ResponseEntity.ok(companyService.createCompany(companyDTO));
     }
 
-    @PreAuthorize("isAuthenticated()") //any logged in user can view company
+//    @PreAuthorize("isAuthenticated()") //any logged in user can view company
     @GetMapping("/{id}")
     public ResponseEntity<Company> getCompany(@PathVariable UUID id){
         return ResponseEntity.ok(companyService.getCompanyById(id));
