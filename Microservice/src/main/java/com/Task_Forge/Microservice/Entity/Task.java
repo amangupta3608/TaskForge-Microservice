@@ -1,5 +1,6 @@
 package com.Task_Forge.Microservice.Entity;
 
+import com.Task_Forge.Microservice.ENUM.ActivityType;
 import com.Task_Forge.Microservice.ENUM.TaskPriority;
 import com.Task_Forge.Microservice.ENUM.TaskStatus;
 import jakarta.persistence.*;
@@ -31,25 +32,47 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
-
     @Column(nullable = false)
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskStatus status; //Enum for this too
-
+    private TaskStatus status; // Enum for Task Status
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskPriority priority; //Enum - MUST_HAVE, SHOULD_HAVE
+    private TaskPriority priority; // Enum - MUST_HAVE, SHOULD_HAVE
 
     @Column(name = "due_date")
     private LocalDateTime dueDate;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "completedAt")
+    @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "last_activity_type")
+    private ActivityType lastActivityType;
+
+    @Column(columnDefinition = "TEXT", name = "last_activity_details")
+    private String lastActivityDetails;
+
+    @Column(name = "last_updated_at")
+    private LocalDateTime lastUpdatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "last_updated_by")
+    private User lastUpdatedBy;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastUpdatedAt = LocalDateTime.now();
+    }
 }

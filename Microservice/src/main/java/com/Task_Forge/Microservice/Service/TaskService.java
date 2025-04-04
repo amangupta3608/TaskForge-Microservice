@@ -9,6 +9,8 @@ import com.Task_Forge.Microservice.Exception.ResourceNotFoundException;
 import com.Task_Forge.Microservice.Repository.ProjectRepository;
 import com.Task_Forge.Microservice.Repository.TaskRepository;
 import com.Task_Forge.Microservice.Repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -20,17 +22,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class TaskService {
 
-    @Autowired
-    private TaskRepository taskRepository;
-
-    @Autowired
-    private ProjectRepository projectRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final TaskRepository taskRepository;
+    private final ProjectRepository projectRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public Task createTask(TaskDTO taskDTO, UUID projectId, UUID assignedToId) {
@@ -46,16 +45,19 @@ public class TaskService {
         task.setStatus(TaskStatus.TO_DO);
         task.setProject(project);
         task.setAssignedTo(assignedUser);
+
         return taskRepository.save(task);
     }
 
-    public long getTasksCountLast7Days(UUID userId){
+    @Transactional(readOnly = true)
+    public long getTasksCountLast7Days(UUID userId) {
         LocalDateTime lastWeek = LocalDateTime.now().minusDays(7);
         return taskRepository.countTasksLast7Days(userId, lastWeek);
     }
 
-    public int getCompletedTasksCount(UUID employeeId){
-        LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
+    @Transactional(readOnly = true)
+    public int getCompletedTasksCount(UUID employeeId) {
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
         return taskRepository.countCompletedTasks(employeeId, sevenDaysAgo);
     }
 
@@ -64,7 +66,6 @@ public class TaskService {
         return taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
     }
-
 
     @Transactional
     public Task updateTask(UUID taskId, TaskDTO taskDTO) {
@@ -76,7 +77,7 @@ public class TaskService {
         String currentUserEmail = authentication.getName();
 
         // Check if the user trying to update the task is the assigned user
-        if (!task.getAssignedTo().getEmail().equals(currentUserEmail)) {
+        if (task.getAssignedTo() == null || !task.getAssignedTo().getEmail().equals(currentUserEmail)) {
             throw new AccessDeniedException("You do not have permission to update this task");
         }
 
@@ -86,5 +87,22 @@ public class TaskService {
         task.setStatus(TaskStatus.valueOf(taskDTO.getStatus().toUpperCase()));
 
         return taskRepository.save(task);
+    }
+
+    @Transactional(readOnly = true)
+    public long countUpdatesInLast7Days() {
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        long count = taskRepository.countUpdatesInLast7Days(sevenDaysAgo);
+        log.info("Found {} updates in the last 7 days", count);
+        return count;
+    }
+
+    @Transactional(readOnly = true)
+    public long countDueSoonTasks() {
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        LocalDateTime now = LocalDateTime.now();
+        long count = taskRepository.countDueSoonTasks(sevenDaysAgo, now);
+        log.info("Found {} tasks due in the last 7 days", count);
+        return count;
     }
 }

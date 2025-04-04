@@ -67,4 +67,16 @@ public class TaskController {
         int taskCount = taskService.getCompletedTasksCount(employeeId);
         return ResponseEntity.ok(Map.of("totalCompletedTasks", taskCount));
     }
+
+    @GetMapping("/due-soon-tasks")
+    public ResponseEntity<Long> countDueSoonTasks(){
+        long count = taskService.countDueSoonTasks();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/updated-last-7-days")
+    public ResponseEntity<Long> getTasksUpdatedLast7Days(){
+        long count = taskService.countUpdatesInLast7Days();
+        return ResponseEntity.ok(count);
+    }
 }
