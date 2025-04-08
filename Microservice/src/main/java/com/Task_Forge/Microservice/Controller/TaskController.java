@@ -6,6 +6,7 @@ import com.Task_Forge.Microservice.Entity.Task;
 import com.Task_Forge.Microservice.Entity.User;
 import com.Task_Forge.Microservice.Exception.ResourceNotFoundException;
 import com.Task_Forge.Microservice.Repository.UserRepository;
+import com.Task_Forge.Microservice.Service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
 import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,6 +33,9 @@ public class TaskController {
 
     @Autowired
     private UserRepository userRepository;
+
+
+    @PreAuthorize("isAuthenticated()")
     private UUID userId;
 
 
@@ -53,10 +60,13 @@ public class TaskController {
         return ResponseEntity.ok(count);
     }
 
+    @PreAuthorize(("hasRole('ASSIGNED_USER') or hasRole('MANAGER') or hasRole('ADMIN')"))
     @GetMapping("/completed-last-week")
     public ResponseEntity<Map<String, Integer>> getCompletedTasks(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUserId = authentication.getName();
+
+        User user = userRepository.findByEmail(loggedInUserId);
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -67,9 +77,13 @@ public class TaskController {
 
         UUID employeeId = user.getId();
         int taskCount = taskService.getCompletedTasksCount(employeeId);
+
+        return ResponseEntity.ok(Map.of("totalCompletedTasks", taskCount));
+
         Map<String, Integer> response = new HashMap<>();
         response.put("totalCompletedTasks", taskCount);
         return ResponseEntity.ok(response);
+
 
     }
 
