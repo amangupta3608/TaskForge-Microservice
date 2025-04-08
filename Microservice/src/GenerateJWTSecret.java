@@ -2,11 +2,14 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class GenerateJWTSecret {
-    public static void main(String[] args) {
-        SecureRandom random = new SecureRandom();
-        byte[] key = new byte[32]; // 32 bytes = 256-bit key
-        random.nextBytes(key);
-        String jwtSecret = Base64.getEncoder().encodeToString(key);
-        System.out.println("New JWT Secret: " + jwtSecret);
+    public GenerateJWTSecret() {
+    }
+
+    public static void main(String[] var0) {
+        SecureRandom var1 = new SecureRandom();
+        byte[] var2 = new byte[32];
+        var1.nextBytes(var2);
+        String var3 = Base64.getEncoder().encodeToString(var2);
+        System.out.println("New JWT Secret: " + var3);
     }
 }

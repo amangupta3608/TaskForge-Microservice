@@ -30,18 +30,36 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest){
-        String jwt = userService.registerUser(signupRequest);
-        return ResponseEntity.ok(jwt);
+        try {
+            if (signupRequest.getName() == null || signupRequest.getEmail() == null || signupRequest.getPassword() == null) {
+                return ResponseEntity.badRequest().body("All fields are required");
+            }
+
+            String jwt = userService.registerUser(signupRequest);
+            return ResponseEntity.ok(jwt);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("User registration failed");
+        }
     }
+
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticationUser(@RequestBody LoginRequest loginRequest){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        try {
+            if (loginRequest.getEmail() == null || loginRequest.getPassword() == null) {
+                return ResponseEntity.badRequest().body("Email and Password are required");
+            }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
 
-        String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(jwt);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = tokenProvider.generateToken(authentication);
+            return ResponseEntity.ok(jwt);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Invalid Credentials");
+        }
     }
+
 }

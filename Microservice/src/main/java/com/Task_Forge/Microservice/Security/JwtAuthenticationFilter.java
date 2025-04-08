@@ -13,48 +13,50 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtTokenProvider tokenProvider;
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String token = getJwtFromRequest(request);
 
-        // Skip JWT authentication for signup & login
-        String requestPath = request.getServletPath();
-        if (requestPath.equals("/api/auth/signup") || requestPath.equals("/api/auth/login")) {
-            chain.doFilter(request, response);
-            return;
-        }
+        if (token != null && tokenProvider.validateToken(token)) {
+            // Extract username from token
+            String username = tokenProvider.getUsernameFromToken(token);
 
-        String token = getTokenFromRequest(request);
+            // Check if user is already authenticated
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // Load user details from the database
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        if (token != null) {
-            String userEmail = jwtUtils.getUsernameFromToken(token);
+                // Validate token with loaded user details
+                if (tokenProvider.validateToken(token)) {
+                    // Create authentication object
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-            if (userEmail != null && jwtUtils.validateToken(token)) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // Set authentication in the security context
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         }
 
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
-
-    private String getTokenFromRequest(HttpServletRequest request) {
+    private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
