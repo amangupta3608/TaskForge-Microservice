@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="cn.antcore.spring.boot.starter.security" type="repository">
+    <properties maven-id="cn.antcore:spring-boot-starter-security:1.0.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/spring-boot-starter-security-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
