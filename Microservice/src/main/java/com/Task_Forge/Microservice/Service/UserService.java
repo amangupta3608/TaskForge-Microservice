@@ -35,19 +35,31 @@ public class UserService {
 
     @Transactional
     public String registerUser(SignupRequest signupRequest) {
-        if (userRepository.findByEmail(signupRequest.getEmail()) != null) {
-            throw new RuntimeException("User with this email already exists");
-        }
-
         User user = new User();
+        user.setId(UUID.randomUUID());
         user.setName(signupRequest.getName());
         user.setEmail(signupRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));  // ✅ Store encoded password
-        user.setRole(signupRequest.getRole() != null ? signupRequest.getRole() : RoleType.DEVELOPER);
+
+        // 🔐 Hash the password before saving
+        String hashedPassword = passwordEncoder.encode(signupRequest.getPassword());
+        user.setPassword(hashedPassword);
+
+        // Optionally set role or other details
+        Role role = new Role();
+        role.setName(RoleType.USER.name());
+
+
         userRepository.save(user);
 
-        // ✅ Instead of forcing authentication, just return a success message
-        return "User registered successfully. Please log in.";
+        // Return a JWT token after registration
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                signupRequest.getEmail(), signupRequest.getPassword()
+        );
+
+        String token = jwtTokenProvider.generateToken(user.getEmail());
+        return token;
+
+
     }
 
 

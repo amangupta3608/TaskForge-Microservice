@@ -30,6 +30,6 @@ public class User {
     private RoleType role;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 }

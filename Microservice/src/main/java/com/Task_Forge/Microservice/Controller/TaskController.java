@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import java.util.UUID;
@@ -34,8 +33,7 @@ public class TaskController {
     @Autowired
     private UserRepository userRepository;
 
-
-    @PreAuthorize("isAuthenticated()")
+    @Autowired
     private UUID userId;
 
 
@@ -66,7 +64,6 @@ public class TaskController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUserId = authentication.getName();
 
-        User user = userRepository.findByEmail(loggedInUserId);
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -78,7 +75,6 @@ public class TaskController {
         UUID employeeId = user.getId();
         int taskCount = taskService.getCompletedTasksCount(employeeId);
 
-        return ResponseEntity.ok(Map.of("totalCompletedTasks", taskCount));
 
         Map<String, Integer> response = new HashMap<>();
         response.put("totalCompletedTasks", taskCount);
