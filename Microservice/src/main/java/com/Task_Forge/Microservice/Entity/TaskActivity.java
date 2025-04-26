@@ -29,6 +29,9 @@ public class TaskActivity {
     @Column(nullable = false)
     private LocalDateTime updatedAt; // Timestamp when updated occurred
 
+    @Column
+    private LocalDateTime dueDate;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User updatedBy; // Tracks user who the update

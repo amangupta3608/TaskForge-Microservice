@@ -13,7 +13,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "id")
     private UUID id;
 
     @Column(nullable = false)
@@ -29,7 +29,4 @@ public class User {
     @Column(nullable = false)
     private RoleType role;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id", nullable = false)
-    private Company company;
 }

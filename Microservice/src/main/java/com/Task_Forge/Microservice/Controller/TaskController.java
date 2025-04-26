@@ -33,7 +33,6 @@ public class TaskController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private UUID userId;
 
 

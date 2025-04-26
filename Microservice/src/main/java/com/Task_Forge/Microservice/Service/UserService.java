@@ -33,7 +33,6 @@ public class UserService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
     public String registerUser(SignupRequest signupRequest) {
         User user = new User();
         user.setId(UUID.randomUUID());
@@ -51,15 +50,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        // Return a JWT token after registration
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                signupRequest.getEmail(), signupRequest.getPassword()
-        );
-
-        String token = jwtTokenProvider.generateToken(user.getEmail());
-        return token;
-
-
+        return "registration success";
     }
 
 

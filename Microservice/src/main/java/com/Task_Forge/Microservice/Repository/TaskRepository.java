@@ -21,12 +21,12 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     @Query("SELECT COUNT(t) FROM Task t WHERE t.assignedTo.id = :userId AND t.createdAt >= :lastWeek")
     long countTasksLast7Days(@Param("userId") UUID userId, @Param("lastWeek") LocalDateTime lastWeek);
 
-    @Query("SELECT COUNT(t) FROM Task t WHERE t.lastUpdatedAt >= :sevenDaysAgo")
+    @Query("SELECT COUNT(t) FROM Task t WHERE t.updatedAt >= :sevenDaysAgo")
     long countUpdatesInLast7Days(@Param("sevenDaysAgo") LocalDateTime sevenDaysAgo);  // Fixed field name
 
     List<Task> findByAssignedToAndStatus(User user, TaskStatus status);
 
-    @Query("SELECT COUNT(t) FROM TaskActivity t WHERE t.dueDate BETWEEN :from AND :to")
+    @Query("SELECT COUNT(t) FROM Task t WHERE t.dueDate BETWEEN :from AND :to")
     long countDueSoonTasks(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
 }

@@ -2,6 +2,8 @@ package com.Task_Forge.Microservice.Controller;
 
 import com.Task_Forge.Microservice.DTO.LoginRequest;
 import com.Task_Forge.Microservice.DTO.SignupRequest;
+import com.Task_Forge.Microservice.ENUM.RoleType;
+import com.Task_Forge.Microservice.Entity.Role;
 import com.Task_Forge.Microservice.Entity.User;
 import com.Task_Forge.Microservice.Repository.UserRepository;
 import com.Task_Forge.Microservice.Security.JwtTokenProvider;
@@ -15,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,6 +37,9 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
 
     @PostMapping("/signup")
@@ -42,8 +49,22 @@ public class AuthController {
                 return ResponseEntity.badRequest().body("All fields are required");
             }
 
-            String jwt = userService.registerUser(signupRequest);
-            return ResponseEntity.ok(jwt);
+            User user = new User();
+            user.setName(signupRequest.getName());
+            user.setEmail(signupRequest.getEmail());
+
+            // 🔐 Hash the password before saving
+            String hashedPassword = passwordEncoder.encode(signupRequest.getPassword());
+            user.setPassword(hashedPassword);
+
+            // Optionally set role or other details
+            Role role = new Role();
+            user.setRole(RoleType.ADMIN);
+
+
+
+            userRepository.save(user);
+            return ResponseEntity.ok("registration success");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("User registration failed");
         }
