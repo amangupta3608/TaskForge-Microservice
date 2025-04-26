@@ -8,7 +8,7 @@ import com.Task_Forge.Microservice.MailService.CreateProjectMailService;
 
 public class MailServiceTest {
     public static void main(String[] args) {
-        String recipient = "vanshikavs3008@gmail.com"; // Change this to a real email
+        String recipient = "test@gmail.com"; // Change this to a real email
         String otp = RegisterMailService.generateOTP();
 
         RegisterMailService.sendOTP(recipient, otp);

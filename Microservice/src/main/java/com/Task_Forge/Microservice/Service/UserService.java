@@ -33,12 +33,7 @@ public class UserService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @Transactional
-    public String registerUser(SignupRequest signupRequest){
-        if(userRepository.findByEmail(signupRequest.getEmail()) != null){
-            throw new RuntimeException("User with this email already exists");
-        }
-
+    public String registerUser(SignupRequest signupRequest) {
         User user = new User();
         user.setName(signupRequest.getName());
         user.setEmail(signupRequest.getEmail());
@@ -47,12 +42,20 @@ public class UserService {
         user.setRole(signupRequest.getRole() != null ? signupRequest.getRole() : RoleType.DEVELOPER);
         userRepository.save(user);
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signupRequest.getEmail(), signupRequest.getPassword())
-        );
+        // 🔐 Hash the password before saving
+        String hashedPassword = passwordEncoder.encode(signupRequest.getPassword());
+        user.setPassword(hashedPassword);
 
-        return jwtTokenProvider.generateToken(authentication);
+        // Optionally set role or other details
+        Role role = new Role();
+        role.setName(RoleType.USER.name());
+
+
+        userRepository.save(user);
+
+        return "registration success";
     }
+
 
     @Transactional
     public String authenticateUser(LoginRequest loginRequest){

@@ -6,8 +6,9 @@ import javax.mail.internet.*;
 import java.util.Properties;
 
 public class CreateProjectMailService {
-    private static final String EMAIL_FROM = "prajapatikshitij566@gmail.com";
-    private static final String EMAIL_PASSWORD = "Kshitij123";
+    private static final String EMAIL_FROM = "test@gmail.com";
+    private static final String EMAIL_PASSWORD = "TaskForge123";
+
 
     public static void sendOTP(String recipientEmail, String otp) {
         Properties properties = new Properties();

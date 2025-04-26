@@ -1,47 +1,85 @@
 package com.Task_Forge.Microservice.Util;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.util.Base64;
+
 import java.lang.String;
+
 import java.util.Date;
+import java.util.logging.Logger;
 
 @Component
 public class JwtUtils {
 
+    private static final Logger logger = Logger.getLogger(JwtUtils.class.getName());
+
     @Value("${jwt.secret}")
    private  String secretKey;
 
-    public String getSecretKey(){
-        return secretKey;
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Base64.getDecoder().decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String getUsernameFromToken(String token){
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+
+    public String generateToken(String username) {
+        long expirationTime = 1000 * 60 * 60 * 10;
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
-    public boolean validateToken(String token){
-        try{
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+
+    public String getUsernameFromToken(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (Exception e) {
+            logger.warning("Invalid token: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
-        }catch (JwtException ex){
+        } catch (JwtException ex) {
+            logger.warning("JWT validation failed: " + ex.getMessage());
             return false;
         }
     }
 
-    public boolean isTokenExpired(String token){
-        Date expiration = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        return expiration.before(new Date());
+            Date expiration = claims.getExpiration();
+            return expiration != null && expiration.before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true; // Token is expired
+        } catch (JwtException e) {
+            logger.warning("Error parsing token expiration: " + e.getMessage());
+            return true;
+        }
     }
 }
