@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
+
+import java.lang.String;
+
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -16,7 +19,7 @@ public class JwtUtils {
     private static final Logger logger = Logger.getLogger(JwtUtils.class.getName());
 
     @Value("${jwt.secret}")
-    private String secretKey;
+   private  String secretKey;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);

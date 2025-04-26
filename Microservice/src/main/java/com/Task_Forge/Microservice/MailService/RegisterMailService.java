@@ -10,6 +10,7 @@ public class RegisterMailService {
     private static final String EMAIL_FROM = "test@gmail.com"; // Change to your email
     private static final String EMAIL_PASSWORD = "TaskForge123"; // Use App Password if required
 
+
     // Method to generate OTP
     public static String generateOTP() {
         Random random = new Random();

@@ -9,6 +9,7 @@ public class CreateCompanyMailService {
     private static final String EMAIL_FROM = "test@gmail.com.com";
     private static final String EMAIL_PASSWORD = "TaskForge123";
 
+
     public static void sendOTP(String recipientEmail, String otp) {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");

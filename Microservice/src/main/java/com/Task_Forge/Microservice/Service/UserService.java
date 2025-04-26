@@ -35,9 +35,12 @@ public class UserService {
 
     public String registerUser(SignupRequest signupRequest) {
         User user = new User();
-        user.setId(UUID.randomUUID());
         user.setName(signupRequest.getName());
         user.setEmail(signupRequest.getEmail());
+        user.setUsername(signupRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        user.setRole(signupRequest.getRole() != null ? signupRequest.getRole() : RoleType.DEVELOPER);
+        userRepository.save(user);
 
         // 🔐 Hash the password before saving
         String hashedPassword = passwordEncoder.encode(signupRequest.getPassword());
