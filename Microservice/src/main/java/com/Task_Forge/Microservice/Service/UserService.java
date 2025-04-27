@@ -40,7 +40,7 @@ public class UserService {
         user.setUsername(signupRequest.getUsername());
         user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         user.setRole(signupRequest.getRole() != null ? signupRequest.getRole() : RoleType.DEVELOPER);
-        userRepository.save(user);
+//        userRepository.save(user);
 
         // 🔐 Hash the password before saving
         String hashedPassword = passwordEncoder.encode(signupRequest.getPassword());

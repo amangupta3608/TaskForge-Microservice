@@ -42,33 +42,21 @@ public class AuthController {
 
 
 
+    // Removed duplicate save and refactored to use the service layer
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest){
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
         try {
             if (signupRequest.getName() == null || signupRequest.getEmail() == null || signupRequest.getPassword() == null) {
                 return ResponseEntity.badRequest().body("All fields are required");
             }
 
-            User user = new User();
-            user.setName(signupRequest.getName());
-            user.setEmail(signupRequest.getEmail());
-
-            // 🔐 Hash the password before saving
-            String hashedPassword = passwordEncoder.encode(signupRequest.getPassword());
-            user.setPassword(hashedPassword);
-
-            // Optionally set role or other details
-            Role role = new Role();
-            user.setRole(RoleType.ADMIN);
-
-
-
-            userRepository.save(user);
-            return ResponseEntity.ok("registration success");
+            String result = userService.registerUser(signupRequest); // Delegate to service
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("User registration failed");
+            return ResponseEntity.status(500).body("User registration failed: " + e.getMessage()); // Include exception message for more insight
         }
     }
+
 
 
     @PostMapping("/login")
